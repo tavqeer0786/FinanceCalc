@@ -5,8 +5,10 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 
 // Since we may run in CJS or ESM, derive directory names safely
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = typeof import.meta !== 'undefined' && import.meta.url
+  ? fileURLToPath(import.meta.url)
+  : '';
+const __dirname = __filename ? path.dirname(__filename) : '';
 
 // Import calculator and blog structures for dynamic SEO meta injection
 import { allCalculators } from './src/calculators/index.js';
@@ -16,7 +18,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
   const isProd = process.env.NODE_ENV === 'production';
-  const APP_URL = process.env.APP_URL || 'https://financecalc-one.vercel.app/';
+  const APP_URL = (process.env.APP_URL || 'https://financecalc-one.vercel.app/').replace(/\/$/, '');
   let cachedIndexHtml: string | null = null;
 
   // 1. Robots.txt Route
@@ -190,7 +192,7 @@ Sitemap: ${APP_URL}/sitemap.xml
               'name': 'FinanceCalc',
               'logo': {
                 '@type': 'ImageObject',
-                'url': `${APP_URL}/favicon.ico`
+                'url': `${APP_URL}/logo.png`
               }
             },
             'mainEntityOfPage': {
@@ -256,7 +258,7 @@ Sitemap: ${APP_URL}/sitemap.xml
         '@type': 'Organization',
         'name': 'FinanceCalc',
         'url': APP_URL,
-        'logo': `${APP_URL}/favicon.ico`,
+        'logo': `${APP_URL}/logo.png`,
         'sameAs': []
       };
 
@@ -264,6 +266,7 @@ Sitemap: ${APP_URL}/sitemap.xml
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         'name': 'FinanceCalc',
+        'alternateName': ['Finance Calc'],
         'url': APP_URL,
         'potentialAction': {
           '@type': 'SearchAction',
@@ -279,6 +282,9 @@ Sitemap: ${APP_URL}/sitemap.xml
       extraHead += `
     <link rel="canonical" href="${canonical}" />
     <meta name="description" content="${description}" />
+    <meta name="application-name" content="FinanceCalc" />
+    <meta name="apple-mobile-web-app-title" content="FinanceCalc" />
+    <meta property="og:site_name" content="FinanceCalc" />
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:url" content="${canonical}" />
@@ -290,10 +296,14 @@ Sitemap: ${APP_URL}/sitemap.xml
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&auto=format&fit=crop&q=80" />
       `;
 
-      // Inject into template head
-      let html = template
-        .replace('<title>FinanceCalc - Free Financial Calculators, EMI, SIP, Loan & Investment Tools</title>', `<title>${title}</title>`)
-        .replace('</head>', `${extraHead}\n  </head>`);
+      // Replace the SEO metadata block in template to avoid duplicates
+      const seoPattern = /<!-- BEGIN SEO METADATA -->([\s\S]*?)<!-- END SEO METADATA -->/;
+      let html = template.replace('<title>FinanceCalc - Free Financial Calculators, EMI, SIP, Loan & Investment Tools</title>', `<title>${title}</title>`);
+      if (seoPattern.test(html)) {
+        html = html.replace(seoPattern, extraHead.trim());
+      } else {
+        html = html.replace('</head>', `${extraHead}\n  </head>`);
+      }
 
       res.status(isRouteFound ? 200 : 404).set({ 'Content-Type': 'text/html' }).end(html);
     } catch (e) {
