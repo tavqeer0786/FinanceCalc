@@ -34,9 +34,7 @@ export function Header({ currentPath, navigate }: HeaderProps) {
           onClick={() => navigate('/')} 
           className="flex cursor-pointer items-center gap-2.5 select-none"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm shadow-blue-500/20">
-            <Calculator className="h-5 w-5" />
-          </div>
+          <img src="/logo.png" alt="FinanceCalc Logo" className="h-9 w-9 rounded-lg shadow-sm object-contain" />
           <span className="text-xl font-bold tracking-tight text-gray-900">
             Finance<span className="text-blue-600">Calc</span>
           </span>
