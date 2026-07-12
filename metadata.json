@@ -1,0 +1,6 @@
+{
+  "name": "FinanceCalc",
+  "description": "Professional financial calculators for loans, investments, taxes, and savings",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
