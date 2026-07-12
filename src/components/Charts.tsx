@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, MouseEvent } from 'react';
+import { useCurrency } from '../context/CurrencyContext';
 
 // Interfaces
 interface PieDataItem {
@@ -21,6 +22,7 @@ interface ChartsProps {
 
 export function DonutChart({ data }: { data: PieDataItem[] }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { format } = useCurrency();
   
   const sanitizedData = (data || []).map(item => ({
     ...item,
@@ -81,7 +83,7 @@ export function DonutChart({ data }: { data: PieDataItem[] }) {
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total</span>
           <span className="text-lg font-bold text-gray-900">
-            ${Math.round(total).toLocaleString()}
+            {format(Math.round(total))}
           </span>
         </div>
       </div>
@@ -104,7 +106,7 @@ export function DonutChart({ data }: { data: PieDataItem[] }) {
                 <span className="text-sm font-medium text-gray-700">{item.label}</span>
               </div>
               <div className="text-right">
-                <span className="text-sm font-semibold text-gray-900 block">${Math.round(item.value).toLocaleString()}</span>
+                <span className="text-sm font-semibold text-gray-900 block">{format(Math.round(item.value))}</span>
                 <span className="text-xs text-gray-400">{pct}%</span>
               </div>
             </div>
@@ -119,6 +121,7 @@ export function GrowthAreaChart({ data }: { data: GrowthRow[] }) {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; active: boolean; data?: GrowthRow } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(500);
+  const { format } = useCurrency();
   
   useEffect(() => {
     if (!containerRef.current) return;
@@ -244,7 +247,7 @@ export function GrowthAreaChart({ data }: { data: GrowthRow[] }) {
             <g key={idx}>
               <line x1={paddingLeft} y1={y} x2={width - paddingRight} y2={y} stroke="#F3F4F6" strokeWidth={1} />
               <text x={paddingLeft - 8} y={y + 4} textAnchor="end" className="text-[10px] font-mono fill-gray-400">
-                ${Math.round(tick).toLocaleString()}
+                {format(Math.round(tick))}
               </text>
             </g>
           );
@@ -304,15 +307,15 @@ export function GrowthAreaChart({ data }: { data: GrowthRow[] }) {
           <span className="font-bold border-b border-gray-800 pb-1 mb-0.5 text-gray-300">Year {tooltip.data.year}</span>
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">Total Value:</span>
-            <span className="font-semibold text-green-400">${Math.round(tooltip.data.total).toLocaleString()}</span>
+            <span className="font-semibold text-green-400">{format(Math.round(tooltip.data.total))}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">Invested:</span>
-            <span className="font-semibold text-blue-300">${Math.round(tooltip.data.invested).toLocaleString()}</span>
+            <span className="font-semibold text-blue-300">{format(Math.round(tooltip.data.invested))}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">Earnings:</span>
-            <span className="font-semibold text-amber-400">${Math.round(tooltip.data.interest).toLocaleString()}</span>
+            <span className="font-semibold text-amber-400">{format(Math.round(tooltip.data.interest))}</span>
           </div>
         </div>
       )}

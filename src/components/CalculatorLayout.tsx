@@ -9,6 +9,8 @@ import { DonutChart, GrowthAreaChart } from './Charts';
 import { allCalculators } from '../calculators';
 import { exportToCSV } from '../utils/exports';
 import { getEduContent } from '../utils/eduContent';
+import { useCurrency } from '../context/CurrencyContext';
+import { CurrencySelector } from './CurrencySelector';
 
 interface CalculatorLayoutProps {
   calc: CalculatorDef;
@@ -16,6 +18,20 @@ interface CalculatorLayoutProps {
 }
 
 export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
+  const { format, currentCurrency } = useCurrency();
+
+  // Helper to dynamically parse and format currency values containing $
+  const formatSummaryValue = (val: any): any => {
+    if (typeof val !== 'string') return val;
+    return val.replace(/\$([0-9,]+(?:\.[0-9]+)?)/g, (match, numStr) => {
+      const num = parseFloat(numStr.replace(/,/g, ''));
+      if (!isNaN(num)) {
+        return format(num);
+      }
+      return match;
+    });
+  };
+
   // Scenario A vs B Comparison State
   const [comparisonMode, setComparisonMode] = useState(false);
   const [activeScenario, setActiveScenario] = useState<'A' | 'B'>('A');
@@ -77,8 +93,16 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
     const activeResult = comparisonMode && activeScenario === 'B' ? resultB : result;
     if (!activeResult.charts) return;
 
+    const currencySuffix = ` (${currentCurrency.code})`;
+
     if (activeResult.charts.amortization) {
-      const headers = ['Year', 'Annual Payment', 'Principal Paid', 'Interest Paid', 'Outstanding Balance'];
+      const headers = [
+        'Year', 
+        `Annual Payment${currencySuffix}`, 
+        `Principal Paid${currencySuffix}`, 
+        `Interest Paid${currencySuffix}`, 
+        `Outstanding Balance${currencySuffix}`
+      ];
       const rows = activeResult.charts.amortization.map((row) => [
         row.period,
         Math.round(row.payment),
@@ -88,7 +112,12 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
       ]);
       exportToCSV(headers, rows, `${calc.slug}_ledger_statement`);
     } else if (activeResult.charts.growth) {
-      const headers = ['Year', 'Total Invested', 'Interest Accumulated', 'Maturity Value'];
+      const headers = [
+        'Year', 
+        `Total Invested${currencySuffix}`, 
+        `Interest Accumulated${currencySuffix}`, 
+        `Maturity Value${currencySuffix}`
+      ];
       const rows = activeResult.charts.growth.map((row) => [
         row.year,
         Math.round(row.invested),
@@ -97,7 +126,12 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
       ]);
       exportToCSV(headers, rows, `${calc.slug}_investment_growth`);
     } else if (activeResult.charts.brackets) {
-      const headers = ['Tax Rate', 'Taxable Range', 'Taxable Income', 'Tax Amount'];
+      const headers = [
+        'Tax Rate', 
+        'Taxable Range', 
+        `Taxable Income${currencySuffix}`, 
+        `Tax Amount${currencySuffix}`
+      ];
       const rows = activeResult.charts.brackets.map((row) => [
         `${row.rate}%`,
         row.range,
@@ -224,11 +258,13 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                     {/* Synchronized Precision Input Box */}
                     {input.type !== 'select' && input.type !== 'date' && (
                       <div className="relative rounded-lg shadow-sm">
-                        {input.prefix && (
+                        {input.prefix === '$' ? (
+                          <CurrencySelector />
+                        ) : input.prefix ? (
                           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5">
                             <span className="text-xs text-gray-400 font-medium">{input.prefix}</span>
                           </div>
-                        )}
+                        ) : null}
                         <input
                           type="number"
                           value={value}
@@ -239,8 +275,12 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                             let val = e.target.value === '' ? '' : Number(e.target.value);
                             handleInputChange(input.id, val);
                           }}
-                          className={`w-28 rounded-lg border border-gray-200 py-1 text-right text-xs font-semibold text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
-                            input.prefix ? 'pl-6 pr-2.5' : 'px-2.5'
+                          className={`rounded-lg border border-gray-200 py-1 text-right text-xs font-semibold text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
+                            input.prefix === '$'
+                              ? 'w-44 pl-18 pr-2.5'
+                              : input.prefix
+                                ? 'w-28 pl-6 pr-2.5'
+                                : 'w-28 px-2.5'
                           }`}
                         />
                       </div>
@@ -294,17 +334,19 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                   {/* Direct Number Input (without slider) */}
                   {input.type === 'number' && !input.min && (
                     <div className="relative mt-1">
-                      {input.prefix && (
+                      {input.prefix === '$' ? (
+                        <CurrencySelector />
+                      ) : input.prefix ? (
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                           <span className="text-sm text-gray-400">{input.prefix}</span>
                         </div>
-                      )}
+                      ) : null}
                       <input
                         type="number"
                         value={value}
                         onChange={(e) => handleInputChange(input.id, Number(e.target.value))}
                         className={`w-full rounded-lg border border-gray-200 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
-                          input.prefix ? 'pl-8 pr-3' : 'px-3'
+                          input.prefix === '$' ? 'pl-20 pr-3' : input.prefix ? 'pl-8 pr-3' : 'px-3'
                         }`}
                       />
                     </div>
@@ -366,7 +408,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                       }`}
                       style={{ color: sum.color }}
                     >
-                      {sum.value}
+                      {formatSummaryValue(sum.value)}
                     </div>
                   </div>
                 ))}
@@ -394,7 +436,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                   
                   if (diff !== 0) {
                     const sign = diff > 0 ? '+' : '';
-                    const formattedDiff = isPercent ? `${sign}${diff.toFixed(2)}%` : `$${Math.abs(diff).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    const formattedDiff = isPercent ? `${sign}${diff.toFixed(2)}%` : format(Math.abs(diff));
                     varianceText = isBSaving 
                       ? `${isPercent ? '+' : 'Saves '}${formattedDiff} in Scenario B` 
                       : `${isPercent ? '-' : 'Saves '}${formattedDiff} in Scenario A`;
@@ -410,11 +452,11 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                       <div className="grid grid-cols-2 gap-4 sm:col-span-2">
                         <div>
                           <span className="text-[10px] text-gray-400 block font-bold uppercase">Scenario A</span>
-                          <span className="text-base font-extrabold text-slate-800">{valA}</span>
+                          <span className="text-base font-extrabold text-slate-800">{formatSummaryValue(valA)}</span>
                         </div>
                         <div>
                           <span className="text-[10px] text-gray-400 block font-bold uppercase">Scenario B</span>
-                          <span className="text-base font-extrabold text-blue-600">{valB}</span>
+                          <span className="text-base font-extrabold text-blue-600">{formatSummaryValue(valB)}</span>
                           {diff !== 0 && (
                             <span className={`block text-[10px] font-semibold mt-0.5 ${isBSaving ? 'text-green-600' : 'text-amber-600'}`}>
                               {varianceText}
@@ -536,7 +578,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                               <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(100, b.pct)}%`, backgroundColor: b.color }} />
                             </div>
                             <div className="flex justify-between text-[10px] text-gray-400">
-                              <span>Spent: ${Math.round(b.amount).toLocaleString()}</span>
+                              <span>Spent: {format(Math.round(b.amount))}</span>
                               <span>Target: {idx === 0 ? '50%' : idx === 1 ? '30%' : '20%'}</span>
                             </div>
                           </div>
@@ -571,10 +613,10 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                                 {activeResult.charts.amortization.map((row, idx) => (
                                   <tr key={idx} className="hover:bg-gray-50/50">
                                     <td className="px-4 py-3 font-semibold">Yr {row.period}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.payment).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.principal).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.interest).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.remainingBalance).toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.payment))}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.principal))}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.interest))}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.remainingBalance))}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -596,9 +638,9 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                                 {activeResult.charts.growth.map((row, idx) => (
                                   <tr key={idx} className="hover:bg-gray-50/50">
                                     <td className="px-4 py-3 font-semibold">Yr {row.year}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.invested).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.interest).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right font-semibold text-green-600">${Math.round(row.total).toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.invested))}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.interest))}</td>
+                                    <td className="px-4 py-3 text-right font-semibold text-green-600">{format(Math.round(row.total))}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -621,8 +663,8 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                                   <tr key={idx} className="hover:bg-gray-50/50">
                                     <td className="px-4 py-3 font-semibold text-red-600">{row.rate}%</td>
                                     <td className="px-4 py-3 text-gray-500">{row.range}</td>
-                                    <td className="px-4 py-3 text-right">${Math.round(row.taxableIncome).toLocaleString()}</td>
-                                    <td className="px-4 py-3 text-right font-semibold">${Math.round(row.taxAmount).toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-right">{format(Math.round(row.taxableIncome))}</td>
+                                    <td className="px-4 py-3 text-right font-semibold">{format(Math.round(row.taxAmount))}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -657,10 +699,10 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
               {result.charts.amortization.map((row, idx) => (
                 <tr key={idx}>
                   <td className="border px-3 py-2">Yr {row.period}</td>
-                  <td className="border px-3 py-2 text-right">${Math.round(row.payment).toLocaleString()}</td>
-                  <td className="border px-3 py-2 text-right">${Math.round(row.principal).toLocaleString()}</td>
-                  <td className="border px-3 py-2 text-right">${Math.round(row.interest).toLocaleString()}</td>
-                  <td className="border px-3 py-2 text-right">${Math.round(row.remainingBalance).toLocaleString()}</td>
+                  <td className="border px-3 py-2 text-right">{format(Math.round(row.payment))}</td>
+                  <td className="border px-3 py-2 text-right">{format(Math.round(row.principal))}</td>
+                  <td className="border px-3 py-2 text-right">{format(Math.round(row.interest))}</td>
+                  <td className="border px-3 py-2 text-right">{format(Math.round(row.remainingBalance))}</td>
                 </tr>
               ))}
             </tbody>
