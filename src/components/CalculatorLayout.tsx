@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
-  ArrowLeft, Share2, Printer, Check, Copy, ChevronDown, ChevronUp, 
-  HelpCircle, BookOpen, AlertCircle, Info, Landmark, HelpCircle as HelpIcon,
+  ArrowLeft, Check, ChevronDown, ChevronUp, 
+  BookOpen, AlertCircle, Info, Landmark, HelpCircle as HelpIcon,
   Download, Sparkles, Clock, Calendar, UserCheck, ShieldCheck, TrendingUp, XCircle, Lightbulb
 } from 'lucide-react';
 import { CalculatorDef, CalculatorResult } from '../types';
@@ -11,6 +11,7 @@ import { exportToCSV } from '../utils/exports';
 import { getEduContent } from '../utils/eduContent';
 import { useCurrency } from '../context/CurrencyContext';
 import { CurrencySelector } from './CurrencySelector';
+import { ExportMenu } from './ExportMenu';
 
 interface CalculatorLayoutProps {
   calc: CalculatorDef;
@@ -32,13 +33,15 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
     });
   };
 
+  // Ref for chart section — used by PDF export to capture the chart image
+  const chartRef = useRef<HTMLDivElement>(null);
+
   // Scenario A vs B Comparison State
   const [comparisonMode, setComparisonMode] = useState(false);
   const [activeScenario, setActiveScenario] = useState<'A' | 'B'>('A');
   const [formInputs, setFormInputs] = useState<Record<string, any>>({});
   const [formInputsB, setFormInputsB] = useState<Record<string, any>>({});
   
-  const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'chart' | 'table'>('chart');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
@@ -77,16 +80,6 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
   const resultB: CalculatorResult = calc.calculate(formInputsB);
 
   // Copy shareable URL
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Trigger print view
-  const handlePrint = () => {
-    window.print();
-  };
 
   // CSV Exporter for dynamic schedules
   const handleCSVExport = () => {
@@ -365,22 +358,15 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
               <Landmark className="h-4 w-4 text-blue-500" /> Interactive Report
             </span>
-            <div className="flex gap-2">
-              <button
-                onClick={handleCopyLink}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Share2 className="h-3.5 w-3.5" />}
-                <span>{copied ? 'Copied Link' : 'Share'}</span>
-              </button>
-              <button
-                onClick={handlePrint}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <Printer className="h-3.5 w-3.5" />
-                <span>Download Report (PDF)</span>
-              </button>
-            </div>
+            <ExportMenu
+              calc={calc}
+              result={result}
+              resultB={resultB}
+              comparisonMode={comparisonMode}
+              formInputs={formInputs}
+              formInputsB={formInputsB}
+              chartRef={chartRef}
+            />
           </div>
 
           {/* Results Summary Dashboard */}
@@ -472,7 +458,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
             {/* Graphs and Tabs */}
             {(result.charts || (comparisonMode && resultB.charts)) && (
-              <div className="space-y-6">
+              <div ref={chartRef} className="space-y-6">
                 
                 {/* Tab select list */}
                 {(result.charts?.amortization || result.charts?.growth || result.charts?.brackets || result.charts?.budget || result.charts?.debt) && (
