@@ -1,7 +1,7 @@
 /**
  * pdfExport.ts — Client-side PDF generation engine for FinanceCalc
  *
- * Strategy: capture the full calculator page using html2canvas with print-mode
+ * Strategy: capture the full calculator page using html-to-image with print-mode
  * simulation (hide print:hidden elements, show print:block elements),
  * then paginate the resulting image into an A4 PDF.
  *
@@ -24,80 +24,78 @@ export async function generatePdfReport(opts: PdfReportOptions): Promise<void> {
   const element = pageRef.current;
   if (!element) throw new Error('Page ref not attached');
 
-  // Lazy-load both libraries
-  const [{ jsPDF }, html2canvas] = await Promise.all([
-    import('jspdf'),
-    import('html2canvas').then(m => m.default),
-  ]);
+  // Create a clone to manipulate styles for "print mode"
+  const clone = element.cloneNode(true) as HTMLElement;
 
-  // A4 page dimensions in mm
-  const PAGE_W_MM = 210;
-  const PAGE_H_MM = 297;
-  const MARGIN_MM = 10;
-  const CONTENT_W_MM = PAGE_W_MM - MARGIN_MM * 2;
-  const CONTENT_H_MM = PAGE_H_MM - MARGIN_MM * 2;
-
-  const SCALE = 2; // Retina quality
-
-  // ── Capture the page, simulating print mode via onclone ──────────────────
-  const canvas = await html2canvas(element, {
-    scale: SCALE,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    logging: false,
-    allowTaint: true,
-    // Capture the full scrollable height, not just the viewport
-    windowWidth: element.scrollWidth,
-    windowHeight: element.scrollHeight,
-    scrollX: 0,
-    scrollY: 0,
-    onclone: (_clonedDoc: Document, clonedElement: Element) => {
-      // ① Hide elements that are hidden during print (print:hidden)
-      clonedElement.querySelectorAll<HTMLElement>('[class*="print:hidden"]').forEach(el => {
-        el.style.setProperty('display', 'none', 'important');
-      });
-
-      // ② Show elements that are only visible during print (hidden print:block)
-      clonedElement.querySelectorAll<HTMLElement>('[class*="print:block"]').forEach(el => {
-        el.style.setProperty('display', 'block', 'important');
-      });
-
-      // ③ Remove any overflow hidden that might clip content
-      clonedElement.querySelectorAll<HTMLElement>('[class*="overflow-hidden"]').forEach(el => {
-        el.style.overflow = 'visible';
-      });
-    },
+  // Apply print-specific display rules
+  clone.querySelectorAll<HTMLElement>('[class*="print:hidden"]').forEach(el => {
+    el.style.setProperty('display', 'none', 'important');
+  });
+  clone.querySelectorAll<HTMLElement>('[class*="print:block"]').forEach(el => {
+    el.style.setProperty('display', 'block', 'important');
+  });
+  clone.querySelectorAll<HTMLElement>('[class*="overflow-hidden"]').forEach(el => {
+    el.style.overflow = 'visible';
   });
 
-  // ── Build A4 PDF, paginating the canvas across pages ────────────────────
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  // Append clone off-screen so styles apply correctly
+  clone.style.position = 'absolute';
+  clone.style.left = '-9999px';
+  clone.style.top = '0';
+  clone.style.width = `${element.scrollWidth}px`;
+  clone.style.backgroundColor = '#ffffff';
 
-  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  document.body.appendChild(clone);
 
-  // Scale canvas to fit A4 content width
-  const canvasPxW = canvas.width;
-  const canvasPxH = canvas.height;
+  try {
+    // Lazy-load libraries
+    const [{ jsPDF }, { toJpeg }] = await Promise.all([
+      import('jspdf'),
+      import('html-to-image'),
+    ]);
 
-  // Width in mm when fitted to content area
-  const fittedImgW = CONTENT_W_MM;
-  const fittedImgH = (canvasPxH / canvasPxW) * fittedImgW;
+    // Render clone to JPEG
+    const imgData = await toJpeg(clone, { 
+      quality: 0.95, 
+      pixelRatio: 2,
+      backgroundColor: '#ffffff'
+    });
 
-  // How many A4 pages we need
-  const totalPages = Math.ceil(fittedImgH / CONTENT_H_MM);
+    // A4 page dimensions in mm
+    const PAGE_W_MM = 210;
+    const PAGE_H_MM = 297;
+    const MARGIN_MM = 10;
+    const CONTENT_W_MM = PAGE_W_MM - MARGIN_MM * 2;
+    const CONTENT_H_MM = PAGE_H_MM - MARGIN_MM * 2;
 
-  for (let page = 0; page < totalPages; page++) {
-    if (page > 0) doc.addPage();
+    // We need to calculate the aspect ratio from the DOM element since we don't have a canvas object directly
+    // element.scrollHeight is not entirely accurate for the clone due to hidden elements, so we use clone's scrollHeight
+    const clonePxW = clone.scrollWidth;
+    const clonePxH = clone.scrollHeight;
 
-    // Position the image so the correct slice falls within this page
-    const yOffset = MARGIN_MM - page * CONTENT_H_MM;
-    doc.addImage(imgData, 'JPEG', MARGIN_MM, yOffset, fittedImgW, fittedImgH);
+    const fittedImgW = CONTENT_W_MM;
+    const fittedImgH = (clonePxH / clonePxW) * fittedImgW;
+
+    const totalPages = Math.ceil(fittedImgH / CONTENT_H_MM);
+
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) doc.addPage();
+      const yOffset = MARGIN_MM - page * CONTENT_H_MM;
+      doc.addImage(imgData, 'JPEG', MARGIN_MM, yOffset, fittedImgW, fittedImgH);
+    }
+
+    const slug = calc.slug
+      .split('-')
+      .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join('-');
+
+    doc.save(`FinanceCalc-${slug}-Report.pdf`);
+  } finally {
+    // Ensure clone is always removed
+    if (document.body.contains(clone)) {
+      document.body.removeChild(clone);
+    }
   }
-
-  // ── File name: FinanceCalc-Emi-Calculator-Report.pdf ────────────────────
-  const slug = calc.slug
-    .split('-')
-    .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join('-');
-
-  doc.save(`FinanceCalc-${slug}-Report.pdf`);
 }
