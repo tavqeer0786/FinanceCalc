@@ -16,7 +16,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
   const isProd = process.env.NODE_ENV === 'production';
-  const APP_URL = process.env.APP_URL || 'https://financecalc.com';
+  const APP_URL = process.env.APP_URL || 'https://financecalc-one.vercel.app/';
   let cachedIndexHtml: string | null = null;
 
   // 1. Robots.txt Route

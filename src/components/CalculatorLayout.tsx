@@ -123,7 +123,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
       <div className="hidden print:block text-center mb-8 border-b pb-6">
         <h1 className="text-3xl font-bold text-gray-900">FinanceCalc - {calc.name} Report</h1>
         <p className="text-sm text-gray-500 mt-2">Generated on: {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
-        <p className="text-xs text-gray-400 mt-1">Visit https://financecalc.com for professional, free calculations</p>
+        <p className="text-xs text-gray-400 mt-1">Visit https://financecalc-one.vercel.app/ for professional, free calculations</p>
       </div>
 
       {/* Breadcrumbs */}
