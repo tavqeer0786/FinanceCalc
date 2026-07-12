@@ -33,8 +33,8 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
     });
   };
 
-  // Ref for chart section — used by PDF export to capture the chart image
-  const chartRef = useRef<HTMLDivElement>(null);
+  // Ref for full page — used by PDF export to capture the print-layout view
+  const pageRef = useRef<HTMLDivElement>(null);
 
   // Scenario A vs B Comparison State
   const [comparisonMode, setComparisonMode] = useState(false);
@@ -144,7 +144,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
   const edu = getEduContent(calc, displayInputs);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div ref={pageRef} className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       
       {/* Printable Print Header */}
       <div className="hidden print:block text-center mb-8 border-b pb-6">
@@ -360,12 +360,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             </span>
             <ExportMenu
               calc={calc}
-              result={result}
-              resultB={resultB}
-              comparisonMode={comparisonMode}
-              formInputs={formInputs}
-              formInputsB={formInputsB}
-              chartRef={chartRef}
+              pageRef={pageRef}
             />
           </div>
 
@@ -458,7 +453,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
             {/* Graphs and Tabs */}
             {(result.charts || (comparisonMode && resultB.charts)) && (
-              <div ref={chartRef} className="space-y-6">
+              <div className="space-y-6">
                 
                 {/* Tab select list */}
                 {(result.charts?.amortization || result.charts?.growth || result.charts?.brackets || result.charts?.budget || result.charts?.debt) && (

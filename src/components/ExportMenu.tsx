@@ -2,28 +2,21 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Share2, ChevronDown, FileDown, Copy, Printer, Check, X, Loader2
 } from 'lucide-react';
-import { CalculatorDef, CalculatorResult } from '../types';
-import { useCurrency } from '../context/CurrencyContext';
+import type { RefObject } from 'react';
+import { CalculatorDef } from '../types';
 import { generatePdfReport } from '../utils/pdfExport';
 import { shareLink, copyToClipboard } from '../utils/share';
 
 interface ExportMenuProps {
   calc: CalculatorDef;
-  result: CalculatorResult;
-  resultB: CalculatorResult;
-  comparisonMode: boolean;
-  formInputs: Record<string, any>;
-  formInputsB: Record<string, any>;
-  chartRef: React.RefObject<HTMLDivElement | null>;
+  pageRef: RefObject<HTMLDivElement | null>;
 }
 
 type ToastState = { visible: boolean; message: string; type: 'success' | 'error' };
 
 export function ExportMenu({
-  calc, result, resultB, comparisonMode,
-  formInputs, formInputsB, chartRef,
+  calc, pageRef,
 }: ExportMenuProps) {
-  const { currentCurrency, format, formatSummaryValue } = useCurrency() as any;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPdfLoading, setIsPdfLoading] = useState(false);
@@ -59,27 +52,7 @@ export function ExportMenu({
     setIsOpen(false);
     setIsPdfLoading(true);
     try {
-      // Helper so pdfExport can format summary values with currency replacement
-      const formatSummaryStr = (val: string | number) => {
-        if (typeof val !== 'string') return String(val);
-        return val.replace(/\$([0-9,]+(?:\.[0-9]+)?)/g, (_match: string, numStr: string) => {
-          const num = parseFloat(numStr.replace(/,/g, ''));
-          return isNaN(num) ? _match : format(num);
-        });
-      };
-
-      await generatePdfReport({
-        calc,
-        result,
-        resultB,
-        comparisonMode,
-        formInputs,
-        formInputsB,
-        currency: currentCurrency,
-        formatValue: format,
-        formatSummary: formatSummaryStr,
-        chartRef,
-      });
+      await generatePdfReport({ calc, pageRef });
     } catch (err) {
       console.error('PDF generation failed:', err);
       showToast('PDF generation failed. Please try again.', 'error');
