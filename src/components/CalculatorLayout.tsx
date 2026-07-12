@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  ArrowLeft, Check, ChevronDown, ChevronUp, 
+import {
+  ArrowLeft, Check, ChevronDown, ChevronUp,
   BookOpen, AlertCircle, Info, Landmark, HelpCircle as HelpIcon,
   Download, Sparkles, Clock, Calendar, UserCheck, ShieldCheck, TrendingUp, XCircle, Lightbulb
 } from 'lucide-react';
@@ -41,7 +41,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
   const [activeScenario, setActiveScenario] = useState<'A' | 'B'>('A');
   const [formInputs, setFormInputs] = useState<Record<string, any>>({});
   const [formInputsB, setFormInputsB] = useState<Record<string, any>>({});
-  
+
   const [activeTab, setActiveTab] = useState<'chart' | 'table'>('chart');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
@@ -90,10 +90,10 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
     if (activeResult.charts.amortization) {
       const headers = [
-        'Year', 
-        `Annual Payment${currencySuffix}`, 
-        `Principal Paid${currencySuffix}`, 
-        `Interest Paid${currencySuffix}`, 
+        'Year',
+        `Annual Payment${currencySuffix}`,
+        `Principal Paid${currencySuffix}`,
+        `Interest Paid${currencySuffix}`,
         `Outstanding Balance${currencySuffix}`
       ];
       const rows = activeResult.charts.amortization.map((row) => [
@@ -106,9 +106,9 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
       exportToCSV(headers, rows, `${calc.slug}_ledger_statement`);
     } else if (activeResult.charts.growth) {
       const headers = [
-        'Year', 
-        `Total Invested${currencySuffix}`, 
-        `Interest Accumulated${currencySuffix}`, 
+        'Year',
+        `Total Invested${currencySuffix}`,
+        `Interest Accumulated${currencySuffix}`,
         `Maturity Value${currencySuffix}`
       ];
       const rows = activeResult.charts.growth.map((row) => [
@@ -120,9 +120,9 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
       exportToCSV(headers, rows, `${calc.slug}_investment_growth`);
     } else if (activeResult.charts.brackets) {
       const headers = [
-        'Tax Rate', 
-        'Taxable Range', 
-        `Taxable Income${currencySuffix}`, 
+        'Tax Rate',
+        'Taxable Range',
+        `Taxable Income${currencySuffix}`,
         `Tax Amount${currencySuffix}`
       ];
       const rows = activeResult.charts.brackets.map((row) => [
@@ -145,7 +145,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
   return (
     <div ref={pageRef} className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      
+
       {/* Printable Print Header */}
       <div className="hidden print:block text-center mb-8 border-b pb-6">
         <h1 className="text-3xl font-bold text-gray-900">FinanceCalc - {calc.name} Report</h1>
@@ -173,7 +173,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
       {/* Main Grid: Inputs vs Results */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left Column: Form Inputs */}
         <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm print:hidden">
           <div className="mb-6">
@@ -198,14 +198,12 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                 setComparisonMode(!comparisonMode);
                 setActiveScenario('A');
               }}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                comparisonMode ? 'bg-blue-600' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${comparisonMode ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                  comparisonMode ? 'translate-x-5' : 'translate-x-0'
-                }`}
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${comparisonMode ? 'translate-x-5' : 'translate-x-0'
+                  }`}
               />
             </button>
           </div>
@@ -215,21 +213,19 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             <div className="grid grid-cols-2 gap-2 mb-6 bg-gray-150 p-1.5 rounded-xl">
               <button
                 onClick={() => setActiveScenario('A')}
-                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  activeScenario === 'A' 
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/15 scale-105' 
+                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${activeScenario === 'A'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/15 scale-105'
                     : 'text-gray-500 hover:text-gray-900 bg-white/40'
-                }`}
+                  }`}
               >
                 Configure Scenario A
               </button>
               <button
                 onClick={() => setActiveScenario('B')}
-                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  activeScenario === 'B' 
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/15 scale-105' 
+                className={`py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${activeScenario === 'B'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/15 scale-105'
                     : 'text-gray-500 hover:text-gray-900 bg-white/40'
-                }`}
+                  }`}
               >
                 Configure Scenario B
               </button>
@@ -239,7 +235,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
           <div className="space-y-6">
             {calc.inputs.map((input) => {
               const value = displayInputs[input.id] ?? input.defaultValue;
-              
+
               return (
                 <div key={input.id} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -247,7 +243,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                       {input.name}
                       {input.unit && <span className="text-xs text-gray-400 font-normal">({input.unit})</span>}
                     </label>
-                    
+
                     {/* Synchronized Precision Input Box */}
                     {input.type !== 'select' && input.type !== 'date' && (
                       <div className="relative rounded-lg shadow-sm">
@@ -268,13 +264,12 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                             let val = e.target.value === '' ? '' : Number(e.target.value);
                             handleInputChange(input.id, val);
                           }}
-                          className={`rounded-lg border border-gray-200 py-1 text-right text-xs font-semibold text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
-                            input.prefix === '$'
+                          className={`rounded-lg border border-gray-200 py-1 text-right text-xs font-semibold text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${input.prefix === '$'
                               ? 'w-44 pl-18 pr-2.5'
                               : input.prefix
                                 ? 'w-28 pl-6 pr-2.5'
                                 : 'w-28 px-2.5'
-                          }`}
+                            }`}
                         />
                       </div>
                     )}
@@ -338,9 +333,8 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                         type="number"
                         value={value}
                         onChange={(e) => handleInputChange(input.id, Number(e.target.value))}
-                        className={`w-full rounded-lg border border-gray-200 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${
-                          input.prefix === '$' ? 'pl-20 pr-3' : input.prefix ? 'pl-8 pr-3' : 'px-3'
-                        }`}
+                        className={`w-full rounded-lg border border-gray-200 py-2 text-sm text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${input.prefix === '$' ? 'pl-20 pr-3' : input.prefix ? 'pl-8 pr-3' : 'px-3'
+                          }`}
                       />
                     </div>
                   )}
@@ -352,7 +346,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
         {/* Right Column: Live Results */}
         <div className="lg:col-span-7 space-y-6">
-          
+
           {/* Action Operations Panel */}
           <div className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between shadow-sm print:hidden">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1">
@@ -369,24 +363,22 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
               Calculation Output
             </h3>
-            
+
             {!comparisonMode ? (
               // Standard Output Summary List
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 {result.summary.map((sum, index) => (
-                  <div 
-                    key={index} 
-                    className={`p-4 rounded-xl border transition-all ${
-                      index === 0 
-                        ? 'bg-blue-50/50 border-blue-100 col-span-1 sm:col-span-2 shadow-sm' 
+                  <div
+                    key={index}
+                    className={`p-4 rounded-xl border transition-all ${index === 0
+                        ? 'bg-blue-50/50 border-blue-100 col-span-1 sm:col-span-2 shadow-sm'
                         : 'bg-gray-50/50 border-gray-100'
-                    }`}
+                      }`}
                   >
                     <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{sum.label}</span>
-                    <div 
-                      className={`mt-1 font-extrabold tracking-tight ${
-                        index === 0 ? 'text-3xl text-blue-600' : 'text-xl text-gray-900'
-                      }`}
+                    <div
+                      className={`mt-1 font-extrabold tracking-tight ${index === 0 ? 'text-3xl text-blue-600' : 'text-xl text-gray-900'
+                        }`}
                       style={{ color: sum.color }}
                     >
                       {formatSummaryValue(sum.value)}
@@ -400,26 +392,26 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                 {result.summary.map((sum, index) => {
                   const valA = result.summary[index]?.value;
                   const valB = resultB.summary[index]?.value;
-                  
+
                   // Attempt variance parsing safely
                   const numA = Number(String(valA).replace(/[^0-9.-]/g, '')) || 0;
                   const numB = Number(String(valB).replace(/[^0-9.-]/g, '')) || 0;
                   const diff = numB - numA;
                   const isPercent = String(valA).includes('%');
-                  
+
                   let varianceText = '';
                   let isPositiveBetter = true; // default e.g. compound returns
                   if (calc.category === 'loan' || calc.category === 'tax') {
                     isPositiveBetter = false; // lower payments are better
                   }
-                  
+
                   const isBSaving = isPositiveBetter ? diff > 0 : diff < 0;
-                  
+
                   if (diff !== 0) {
                     const sign = diff > 0 ? '+' : '';
                     const formattedDiff = isPercent ? `${sign}${diff.toFixed(2)}%` : format(Math.abs(diff));
-                    varianceText = isBSaving 
-                      ? `${isPercent ? '+' : 'Saves '}${formattedDiff} in Scenario B` 
+                    varianceText = isBSaving
+                      ? `${isPercent ? '+' : 'Saves '}${formattedDiff} in Scenario B`
                       : `${isPercent ? '-' : 'Saves '}${formattedDiff} in Scenario A`;
                   } else {
                     varianceText = 'Equal values';
@@ -454,28 +446,26 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             {/* Graphs and Tabs */}
             {(result.charts || (comparisonMode && resultB.charts)) && (
               <div className="space-y-6">
-                
+
                 {/* Tab select list */}
                 {(result.charts?.amortization || result.charts?.growth || result.charts?.brackets || result.charts?.budget || result.charts?.debt) && (
                   <div className="flex items-center justify-between border-b border-gray-200 print:hidden">
                     <div className="flex">
                       <button
                         onClick={() => setActiveTab('chart')}
-                        className={`py-2 px-4 border-b-2 font-semibold text-xs transition-colors cursor-pointer ${
-                          activeTab === 'chart' 
-                            ? 'border-blue-600 text-blue-600' 
+                        className={`py-2 px-4 border-b-2 font-semibold text-xs transition-colors cursor-pointer ${activeTab === 'chart'
+                            ? 'border-blue-600 text-blue-600'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                          }`}
                       >
                         Visual Charts
                       </button>
                       <button
                         onClick={() => setActiveTab('table')}
-                        className={`py-2 px-4 border-b-2 font-semibold text-xs transition-colors cursor-pointer ${
-                          activeTab === 'table' 
-                            ? 'border-blue-600 text-blue-600' 
+                        className={`py-2 px-4 border-b-2 font-semibold text-xs transition-colors cursor-pointer ${activeTab === 'table'
+                            ? 'border-blue-600 text-blue-600'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                          }`}
                       >
                         Detailed Ledger / Data
                       </button>
@@ -520,7 +510,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                         )}
                       </div>
                     )}
-                    
+
                     {/* Area Growth Chart */}
                     {result.charts?.growth && (
                       <div className="mt-4">
@@ -575,7 +565,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
                     {/* Render schedule for selected scenario in comparison mode, or default */}
                     {(() => {
                       const activeResult = comparisonMode && activeScenario === 'B' ? resultB : result;
-                      
+
                       return (
                         <>
                           {/* Amortization Table */}
@@ -727,7 +717,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
       {/* Applications & Benefits Grid */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch print:hidden">
-        
+
         {/* When to use checklist */}
         <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-4">
@@ -788,7 +778,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
       {/* Formula & Live Step-By-Step Math */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch print:hidden">
-        
+
         {/* Mathematical Formula Card */}
         <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 flex flex-col justify-between shadow-sm">
           <div>
@@ -797,7 +787,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             </span>
             <h3 className="text-lg font-bold text-gray-900">Mathematical Formula Used</h3>
             <p className="text-xs text-gray-500 mt-1">Below is the core arithmetic relationship evaluated dynamically by our calculator.</p>
-            
+
             <div className="mt-5 p-4 rounded-xl bg-gray-50 border border-gray-150 font-mono text-sm text-blue-700 font-bold select-all overflow-x-auto text-center">
               {calc.formula}
             </div>
@@ -816,7 +806,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
             </span>
             <h3 className="text-lg font-bold text-gray-900">Dynamic Step-By-Step Execution</h3>
             <p className="text-xs text-gray-500 mt-1">Review the arithmetic progression evaluating your current form values:</p>
-            
+
             <ul className="mt-4 space-y-3 text-xs text-gray-600 font-medium">
               {edu.stepByStep.map((step, idx) => (
                 <li key={idx} className="flex items-start gap-2">
@@ -855,7 +845,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
 
       {/* Common Mistakes vs Professional Tips */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch print:hidden">
-        
+
         {/* Mistakes to avoid */}
         <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm">
           <h3 className="text-base font-bold text-red-900 flex items-center gap-2 mb-4">
@@ -893,7 +883,7 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
         <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
           <HelpIcon className="h-5 w-5 text-blue-500" /> Frequently Asked Questions (FAQ)
         </h3>
-        
+
         <div className="space-y-4">
           {calc.faqs.map((faq, idx) => {
             const isOpen = openFaqIndex === idx;

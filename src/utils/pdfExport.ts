@@ -6,6 +6,8 @@
  * then paginate the resulting image into an A4 PDF.
  *
  * This produces a PDF that looks IDENTICAL to the browser's print output.
+ * It also completely sidesteps Unicode/font embedding issues (₹, €, etc.)
+ * because the text is rasterized directly by the browser engine.
  * Both libraries are lazy-loaded — zero impact on initial bundle size.
  */
 
@@ -54,7 +56,8 @@ export async function generatePdfReport(opts: PdfReportOptions): Promise<void> {
       import('html-to-image'),
     ]);
 
-    // Render clone to JPEG
+    // Render clone to JPEG. This captures all Unicode/fonts perfectly because
+    // it uses the browser's own native rendering pipeline.
     const imgData = await toJpeg(clone, { 
       quality: 0.95, 
       pixelRatio: 2,
@@ -68,8 +71,7 @@ export async function generatePdfReport(opts: PdfReportOptions): Promise<void> {
     const CONTENT_W_MM = PAGE_W_MM - MARGIN_MM * 2;
     const CONTENT_H_MM = PAGE_H_MM - MARGIN_MM * 2;
 
-    // We need to calculate the aspect ratio from the DOM element since we don't have a canvas object directly
-    // element.scrollHeight is not entirely accurate for the clone due to hidden elements, so we use clone's scrollHeight
+    // Calculate aspect ratio
     const clonePxW = clone.scrollWidth;
     const clonePxH = clone.scrollHeight;
 
