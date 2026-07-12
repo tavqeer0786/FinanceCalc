@@ -1,7 +1,7 @@
-import { investingBlogs } from './blogs/investing';
-import { mortgagesBlogs } from './blogs/mortgages';
-import { taxesBlogs } from './blogs/taxes';
-import { budgetingBlogs } from './blogs/budgeting';
+import { investingBlogs } from './blogs/investing.js';
+import { mortgagesBlogs } from './blogs/mortgages.js';
+import { taxesBlogs } from './blogs/taxes.js';
+import { budgetingBlogs } from './blogs/budgeting.js';
 
 export interface BlogPost {
   slug: string;

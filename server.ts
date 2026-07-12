@@ -135,16 +135,16 @@ Sitemap: ${APP_URL}/sitemap.xml
       ];
       const cleanPathname = url.split('?')[0];
       const isValidStatic = staticPages.includes(cleanPathname);
-      
+
       let isValidBlog = false;
       if (cleanPathname.startsWith('/blog/')) {
         const blogSlug = cleanPathname.substring(6);
         isValidBlog = blogPosts.some(p => p.slug === blogSlug);
       }
-      
+
       const calcSlug = cleanPathname.substring(1);
       const isValidCalc = allCalculators.some(c => c.slug === calcSlug);
-      
+
       const isRouteFound = isValidStatic || isValidBlog || isValidCalc;
 
       // Initialize default SEO tags
@@ -172,7 +172,7 @@ Sitemap: ${APP_URL}/sitemap.xml
         if (post) {
           title = `${post.title} | FinanceCalc Insights`;
           description = post.excerpt;
-          
+
           // Schema for Article / BlogPost
           const blogSchema = {
             '@context': 'https://schema.org',

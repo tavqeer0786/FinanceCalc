@@ -1,9 +1,9 @@
-import { loanCalculators } from './loans';
-import { investmentCalculators } from './investments';
-import { taxCalculators } from './taxes';
-import { everydayCalculators } from './everyday';
-import { advancedCalculators } from './advanced';
-import { CalculatorDef } from '../types';
+import { loanCalculators } from './loans.js';
+import { investmentCalculators } from './investments.js';
+import { taxCalculators } from './taxes.js';
+import { everydayCalculators } from './everyday.js';
+import { advancedCalculators } from './advanced.js';
+import { CalculatorDef } from '../types.js';
 
 export const allCalculators: CalculatorDef[] = [
   ...loanCalculators,
