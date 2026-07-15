@@ -56,7 +56,7 @@ export function Header({ currentPath, navigate }: HeaderProps) {
               currentPath.startsWith('/blog') ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-blue-600'
             }`}
           >
-            Guides
+            Blogs
           </button>
           <button 
             onClick={() => navigate('/#calculators')} 
@@ -157,7 +157,7 @@ export function Header({ currentPath, navigate }: HeaderProps) {
               }}
               className="flex w-full items-center px-3 py-2.5 rounded-lg text-sm font-semibold text-blue-600 hover:bg-blue-50/50"
             >
-              Guides
+              Blogs
             </button>
             <button
               onClick={() => {
