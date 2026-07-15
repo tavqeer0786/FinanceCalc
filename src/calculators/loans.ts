@@ -121,7 +121,14 @@ export const loanCalculators: CalculatorDef[] = [
     faqs: [
       { question: 'What is an EMI?', answer: 'An Equated Monthly Installment (EMI) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. You can easily calculate your EMI using our online tool.' },
       { question: 'How is interest calculated on loans?', answer: 'Most consumer loans use an interest calculator on loan methodology based on a reducing balance. Interest is computed on the outstanding principal at the end of each month.' },
-      { question: 'How do I calculate EMI for a personal loan?', answer: 'Simply enter your loan amount (principal), interest rate, and tenure into our personal loan EMI calculator. The tool will instantly generate your loan schedule and interest breakdown.' }
+      { question: 'How do I calculate EMI for a personal loan?', answer: 'Simply enter your loan amount (principal), interest rate, and tenure into our personal loan EMI calculator. The tool will instantly generate your loan schedule and interest breakdown.' },
+      { question: 'What is the difference between a flat interest rate and a reducing balance rate?', answer: 'A flat interest rate calculates interest on the initial principal loan amount throughout the tenure, which is more expensive. A personal loan reducing balance calculator computes interest only on the outstanding principal amount, saving you money.' },
+      { question: 'What is a loan repayment schedule?', answer: 'A loan repayment schedule is a complete table showing the breakdown of each monthly payment, detailing how much goes towards the principal and how much goes towards the interest.' },
+      { question: 'Can I prepay my loan to save on interest?', answer: 'Yes! Making extra monthly payments (prepayments) directly reduces your outstanding loan principal. This shortens your loan tenure and saves a significant amount on total interest payable.' },
+      { question: 'What is a term loan calculator?', answer: 'A term loan calculator is an online tool that helps you calculate monthly EMI payments, total interest costs, and amortization schedules for any fixed-term borrowing agreement.' },
+      { question: 'How does loan tenure affect my monthly EMI?', answer: 'A longer tenure reduces your monthly EMI amount, making it more manageable. However, it increases the total interest you will pay over the life of the loan. A shorter tenure does the opposite.' },
+      { question: 'What factors determine my bank EMI interest rate?', answer: 'Your interest rate is primarily determined by your credit score, income levels, employment stability, debt-to-income (DTI) ratio, and the bank EMI policies at the time of borrowing.' },
+      { question: 'Is the EMI amount fixed throughout the loan tenure?', answer: 'For fixed-rate loans, the monthly EMI remains constant. For floating-rate or variable-rate loans, the interest rate may adjust based on market conditions, which can alter your monthly payment amount.' }
     ],
     seoTitle: 'EMI Calculator - Free Monthly Loan Installment Calculator Online',
     seoDescription: 'Calculate your monthly EMI for term loans and personal loans with our free online EMI calculator. View your loan repayment schedule and interest chart instantly.',
@@ -133,65 +140,7 @@ export const loanCalculators: CalculatorDef[] = [
       'emi plan', 'bank emi', 'loans and emi', 'loan repayment calculator', 'personal loan emi calculator', 'personal loan interest rate calculator',
       'monthly payment calculator for loan', 'loan repayment schedule', 'personal loan reducing balance calculator'
     ],
-    canonicalSlug: 'emi-calculator',
-    openGraph: {
-      title: 'EMI Calculator - Free Monthly Loan Installment Calculator Online',
-      description: 'Calculate your monthly EMI for term loans and personal loans with our free online EMI calculator. View your loan repayment schedule and interest chart instantly.',
-      type: 'website'
-    },
-    schemas: [
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "EMI Calculator",
-        "applicationCategory": "FinanceApplication",
-        "operatingSystem": "Web",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://financecalc-one.vercel.app/" },
-          { "@type": "ListItem", "position": 2, "name": "Loans", "item": "https://financecalc-one.vercel.app/#loans" },
-          { "@type": "ListItem", "position": 3, "name": "EMI Calculator", "item": "https://financecalc-one.vercel.app/emi-calculator" }
-        ]
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is an EMI?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "An Equated Monthly Installment (EMI) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. You can easily calculate your EMI using our online tool."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How is interest calculated on loans?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Most consumer loans use an interest calculator on loan methodology based on a reducing balance. Interest is computed on the outstanding principal at the end of each month."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I calculate EMI for a personal loan?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Simply enter your loan amount (principal), interest rate, and tenure into our personal loan EMI calculator. The tool will instantly generate your loan schedule and interest breakdown."
-            }
-          }
-        ]
-      }
-    ]
+    canonicalSlug: 'emi-calculator'
   },
   {
     id: 'bike-loan',

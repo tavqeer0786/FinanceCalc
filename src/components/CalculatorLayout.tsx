@@ -13,6 +13,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import { CurrencySelector } from './CurrencySelector';
 import { ExportMenu } from './ExportMenu';
 import { useSEO } from '../hooks/useSEO';
+import { blogPosts } from '../data/blog';
 
 interface CalculatorLayoutProps {
   calc: CalculatorDef;
@@ -141,6 +142,26 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
   const relatedCalcs = allCalculators
     .filter((c) => c.category === calc.category && c.id !== calc.id)
     .slice(0, 4);
+
+  const categoryMap: Record<string, string> = {
+    loan: 'mortgages',
+    investment: 'investing',
+    savings: 'investing',
+    tax: 'taxes',
+    everyday: 'budgeting'
+  };
+  const blogCategory = categoryMap[calc.category] || 'budgeting';
+  const relatedBlogs = blogPosts
+    .filter((p) => p.category === blogCategory)
+    .slice(0, 2);
+
+  const exploreCategories = [
+    { key: 'loan', name: 'Loan Calculators' },
+    { key: 'investment', name: 'Investment Calculators' },
+    { key: 'tax', name: 'Tax & Salary Calculators' },
+    { key: 'savings', name: 'Savings Calculators' },
+    { key: 'everyday', name: 'Everyday Calculators' }
+  ].filter(c => c.key !== calc.category);
 
   const displayInputs = comparisonMode && activeScenario === 'B' ? formInputsB : formInputs;
   const edu = getEduContent(calc, displayInputs);
@@ -916,30 +937,91 @@ export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
         </p>
       </footer>
 
-      {/* Related/Similar Calculators */}
-      {relatedCalcs.length > 0 && (
-        <section className="mt-12 print:hidden">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">
-            Similar Calculators You Might Need
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {relatedCalcs.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => navigate(`/${item.slug}`)}
-                className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 hover:border-blue-500 hover:shadow-md transition-all duration-200"
-              >
-                <h4 className="text-xs font-bold text-gray-900 group-hover:text-blue-600">
-                  {item.name}
-                </h4>
-                <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
-                  {item.description}
-                </p>
+      {/* Related/Similar Calculators, Articles, and Explore Categories */}
+      <div className="mt-12 space-y-12 border-t border-gray-100 pt-8 print:hidden">
+        {relatedCalcs.length > 0 && (
+          <section>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">
+              Similar Calculators You Might Need
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {relatedCalcs.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(`/${item.slug}`)}
+                  className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-4 hover:border-blue-500 hover:shadow-md transition-all duration-200"
+                >
+                  <h4 className="text-xs font-bold text-gray-900 group-hover:text-blue-600">
+                    {item.name}
+                  </h4>
+                  <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+          {/* Related Articles */}
+          {relatedBlogs.length > 0 && (
+            <section className="space-y-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                Related Educational Articles
+              </h3>
+              <div className="space-y-3">
+                {relatedBlogs.map((post) => (
+                  <div
+                    key={post.slug}
+                    onClick={() => navigate(`/blog/${post.slug}`)}
+                    className="group cursor-pointer p-4 rounded-xl border border-gray-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <h4 className="text-xs font-bold text-gray-900 group-hover:text-blue-600">
+                        {post.title}
+                      </h4>
+                      <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-blue-600 font-bold mt-2.5 inline-flex items-center gap-1">
+                      Read Article &rarr;
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
+            </section>
+          )}
+
+          {/* Explore Other Categories */}
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              Explore Other Financial Categories
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {exploreCategories.map((cat) => (
+                <div
+                  key={cat.key}
+                  onClick={() => {
+                    navigate('/');
+                    setTimeout(() => {
+                      const el = document.getElementById('categories');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 150);
+                  }}
+                  className="group cursor-pointer p-3.5 rounded-xl border border-gray-150 bg-gray-50/50 hover:bg-blue-50/50 hover:border-blue-200 transition-all flex items-center justify-between"
+                >
+                  <span className="text-xs font-semibold text-gray-700 group-hover:text-blue-700">
+                    {cat.name}
+                  </span>
+                  <span className="text-xs text-gray-400 group-hover:text-blue-600">&rarr;</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
 
     </div>
   );

@@ -4,11 +4,8 @@ import { blogPosts } from '../src/data/blog.js';
 // ============================================================
 // Dynamic Sitemap Generator — Vercel Serverless Function
 // Reads from allCalculators and blogPosts registries at runtime.
-// Automatically discovers glossary, guides, comparisons,
-// checklists, and FAQs data files when they exist.
+// Supports categorization query params (?type=pages|calculators|blogs|index)
 // ============================================================
-
-const BASE_URL = 'https://financecalc-one.vercel.app';
 
 /** Escape XML special characters in URLs and text */
 function escapeXml(unsafe: string): string {
@@ -38,26 +35,11 @@ interface SitemapEntry {
   priority: string;
 }
 
-/** Try to dynamically load a data module with slugs */
-function tryLoadSlugs(modulePath: string): string[] {
-  try {
-    // Dynamic require — will only succeed if the file exists
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const mod = require(modulePath);
-    // Look for any exported array containing objects with slug property
-    for (const key of Object.keys(mod)) {
-      const val = mod[key];
-      if (Array.isArray(val) && val.length > 0 && typeof val[0]?.slug === 'string') {
-        return val.map((item: { slug: string }) => item.slug);
-      }
-    }
-  } catch (_) {
-    // Module doesn't exist — that's fine, return empty
-  }
-  return [];
-}
-
 export default function handler(req: any, res: any) {
+  const host = req.headers.host || 'financecalc-one.vercel.app';
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
+  const BASE_URL = `${protocol}://${host}`;
+
   const today = new Date().toISOString().split('T')[0];
   const entries: SitemapEntry[] = [];
   const seen = new Set<string>();
@@ -71,72 +53,55 @@ export default function handler(req: any, res: any) {
     }
   }
 
+  // Read query parameters
+  const { type } = req.query || {};
+
+  // If a sitemap index is explicitly requested, serve the directory of split sitemaps
+  if (type === 'index') {
+    let indexXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    indexXml += `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    indexXml += `  <sitemap>\n    <loc>${BASE_URL}/sitemap.xml?type=pages</loc>\n    <lastmod>${today}</lastmod>\n  </sitemap>\n`;
+    indexXml += `  <sitemap>\n    <loc>${BASE_URL}/sitemap.xml?type=calculators</loc>\n    <lastmod>${today}</lastmod>\n  </sitemap>\n`;
+    indexXml += `  <sitemap>\n    <loc>${BASE_URL}/sitemap.xml?type=blogs</loc>\n    <lastmod>${today}</lastmod>\n  </sitemap>\n`;
+    indexXml += `</sitemapindex>`;
+    
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+    return res.status(200).send(indexXml);
+  }
+
   // ── 1. Static / Index Pages ──────────────────────────────
-  addEntry('/', today, 'weekly', '1.0');
-  addEntry('/about', today, 'monthly', '0.8');
-  addEntry('/contact', today, 'monthly', '0.8');
-  addEntry('/privacy-policy', today, 'monthly', '0.8');
-  addEntry('/terms-of-service', today, 'monthly', '0.8');
-  addEntry('/disclaimer', today, 'monthly', '0.8');
-  addEntry('/blog', today, 'weekly', '0.8');
-  addEntry('/guides', today, 'weekly', '0.8');
-  addEntry('/glossary', today, 'weekly', '0.8');
-  addEntry('/calculators', today, 'weekly', '0.8');
-  addEntry('/faq', today, 'weekly', '0.8');
+  if (!type || type === 'pages') {
+    addEntry('/', today, 'weekly', '1.0');
+    addEntry('/about', today, 'monthly', '0.8');
+    addEntry('/contact', today, 'monthly', '0.8');
+    addEntry('/privacy-policy', today, 'monthly', '0.8');
+    addEntry('/terms-of-service', today, 'monthly', '0.8');
+    addEntry('/disclaimer', today, 'monthly', '0.8');
+    addEntry('/blog', today, 'weekly', '0.8');
+    addEntry('/guides', today, 'weekly', '0.8');
+    addEntry('/glossary', today, 'weekly', '0.8');
+    addEntry('/calculators', today, 'weekly', '0.8');
+    addEntry('/faq', today, 'weekly', '0.8');
+  }
 
   // ── 2. Calculator Pages (from allCalculators registry) ───
-  for (const calc of allCalculators) {
-    if (calc.slug) {
-      addEntry(`/${calc.slug}`, today, 'monthly', '0.9');
+  if (!type || type === 'calculators') {
+    for (const calc of allCalculators) {
+      if (calc.slug) {
+        addEntry(`/${calc.slug}`, today, 'monthly', '0.9');
+      }
     }
   }
 
   // ── 3. Blog Posts (from blogPosts registry) ──────────────
-  for (const post of blogPosts) {
-    if (post.slug) {
-      addEntry(`/blog/${post.slug}`, toISODate(post.publishedAt), 'weekly', '0.8');
+  if (!type || type === 'blogs') {
+    for (const post of blogPosts) {
+      if (post.slug) {
+        addEntry(`/blog/${post.slug}`, toISODate(post.publishedAt), 'weekly', '0.8');
+      }
     }
   }
-
-  // ── 4. Glossary Pages (when data file exists) ────────────
-  try {
-    const glossarySlugs = tryLoadSlugs('../src/data/glossary');
-    for (const slug of glossarySlugs) {
-      addEntry(`/glossary/${slug}`, today, 'monthly', '0.7');
-    }
-  } catch (_) {}
-
-  // ── 5. Guides (when data file exists) ────────────────────
-  try {
-    const guidesSlugs = tryLoadSlugs('../src/data/guides');
-    for (const slug of guidesSlugs) {
-      addEntry(`/guides/${slug}`, today, 'weekly', '0.8');
-    }
-  } catch (_) {}
-
-  // ── 6. Comparisons (when data file exists) ───────────────
-  try {
-    const compSlugs = tryLoadSlugs('../src/data/comparisons');
-    for (const slug of compSlugs) {
-      addEntry(`/comparisons/${slug}`, today, 'weekly', '0.8');
-    }
-  } catch (_) {}
-
-  // ── 7. Checklists (when data file exists) ────────────────
-  try {
-    const checkSlugs = tryLoadSlugs('../src/data/checklists');
-    for (const slug of checkSlugs) {
-      addEntry(`/checklists/${slug}`, today, 'weekly', '0.8');
-    }
-  } catch (_) {}
-
-  // ── 8. FAQs (when data file exists) ──────────────────────
-  try {
-    const faqSlugs = tryLoadSlugs('../src/data/faqs');
-    for (const slug of faqSlugs) {
-      addEntry(`/faq/${slug}`, today, 'monthly', '0.7');
-    }
-  } catch (_) {}
 
   // ── Generate XML ─────────────────────────────────────────
   let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;

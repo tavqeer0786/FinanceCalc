@@ -1,7 +1,7 @@
 {
   "name": "FinanceCalc",
   "short_name": "FinanceCalc",
-  "description": "Calculate EMIs, compound interest, investment SIPs, taxes, and salary payouts instantly. 100% free, trustworthy financial planning calculators.",
+  "description": "FinanceCalc offers free online financial calculators. Estimate loan EMIs, mutual fund SIP returns, fixed deposit interest, GST, and income taxes instantly.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -10,7 +10,8 @@
     {
       "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
