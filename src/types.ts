@@ -79,4 +79,13 @@ export interface CalculatorDef {
   faqs: FAQItem[];
   seoTitle: string;
   seoDescription: string;
+  seoKeywords?: string[];
+  canonicalSlug?: string;
+  openGraph?: {
+    title: string;
+    description: string;
+    image?: string;
+    type?: string;
+  };
+  schemas?: Record<string, any>[];
 }

@@ -12,6 +12,7 @@ import { getEduContent } from '../utils/eduContent';
 import { useCurrency } from '../context/CurrencyContext';
 import { CurrencySelector } from './CurrencySelector';
 import { ExportMenu } from './ExportMenu';
+import { useSEO } from '../hooks/useSEO';
 
 interface CalculatorLayoutProps {
   calc: CalculatorDef;
@@ -19,6 +20,7 @@ interface CalculatorLayoutProps {
 }
 
 export function CalculatorLayout({ calc, navigate }: CalculatorLayoutProps) {
+  useSEO(calc);
   const { format, currentCurrency } = useCurrency();
 
   // Helper to dynamically parse and format currency values containing $

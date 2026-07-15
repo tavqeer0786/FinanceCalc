@@ -66,8 +66,8 @@ export const loanCalculators: CalculatorDef[] = [
     name: 'EMI Calculator',
     slug: 'emi-calculator',
     category: 'loan',
-    description: 'Calculate your monthly EMI (Equated Monthly Installment) for any loan.',
-    longDescription: 'Plan your monthly budget by calculating Equated Monthly Installments (EMI) on any home, car, personal, or educational loan instantly. See a clear yearly amortization schedule and principal vs. interest breakdown.',
+    description: 'Calculate your loan EMI (Equated Monthly Installment) online and view your detailed repayment schedule.',
+    longDescription: 'Our free EMI calculator helps you calculate your monthly loan installment instantly. Whether you need a term loan calculator or a personal loan EMI calculator, you can plan your monthly budget by analyzing your principal and interest over time. See a clear yearly loan repayment schedule and understand your reducing balance.',
     inputs: [
       { id: 'principal', name: 'Loan Amount', type: 'number', min: 1000, max: 10000000, step: 1000, defaultValue: 100000, prefix: '$' },
       { id: 'rate', name: 'Interest Rate (Annual)', type: 'slider', min: 1, max: 30, step: 0.1, defaultValue: 8.5, unit: '%' },
@@ -107,23 +107,91 @@ export const loanCalculators: CalculatorDef[] = [
       };
     },
     formula: 'EMI = [P x R x (1+R)^N] / [(1+R)^N - 1]',
-    formulaExplanation: 'Where P is the Principal loan amount, R is the monthly interest rate (Annual Rate / 12 / 100), and N is the loan tenure in number of months.',
+    formulaExplanation: 'Where P is the Principal loan amount, R is the monthly interest rate (Annual Rate / 12 / 100), and N is the loan tenure in number of months. This acts as your standard loan principal and interest calculator formula on a reducing balance basis.',
     example: {
-      scenario: 'Taking a Personal Loan of $50,000 for a duration of 3 years at an annual interest rate of 10%.',
+      scenario: 'Calculating EMI for a 20 lakh personal loan (or $50,000 equivalent) for a duration of 3 years at an annual interest rate of 10%.',
       steps: [
         'Principal (P) = $50,000',
         'Monthly Rate (R) = 10% / 12 / 100 = 0.008333',
         'Tenure in Months (N) = 3 x 12 = 36 months',
         'EMI = [50000 x 0.008333 x (1.008333)^36] / [(1.008333)^36 - 1] = $1,613.36'
       ],
-      result: 'Your monthly EMI is $1,613.36. Over 3 years, you will pay a total of $58,081.04, consisting of $50,000 principal and $8,081.04 in interest.'
+      result: 'Your monthly payment is $1,613.36. Over 3 years, you will pay a total of $58,081.04, consisting of $50,000 principal and $8,081.04 in interest.'
     },
     faqs: [
-      { question: 'What is an EMI?', answer: 'An Equated Monthly Installment (EMI) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month.' },
-      { question: 'How is interest calculated on loans?', answer: 'Most consumer loans use a reducing balance method where interest is computed on the outstanding loan balance at the end of each month.' }
+      { question: 'What is an EMI?', answer: 'An Equated Monthly Installment (EMI) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. You can easily calculate your EMI using our online tool.' },
+      { question: 'How is interest calculated on loans?', answer: 'Most consumer loans use an interest calculator on loan methodology based on a reducing balance. Interest is computed on the outstanding principal at the end of each month.' },
+      { question: 'How do I calculate EMI for a personal loan?', answer: 'Simply enter your loan amount (principal), interest rate, and tenure into our personal loan EMI calculator. The tool will instantly generate your loan schedule and interest breakdown.' }
     ],
-    seoTitle: 'Loan EMI Calculator - Plan Your Monthly Installment Online',
-    seoDescription: 'Calculate Equated Monthly Installment (EMI) for home loan, car loan, and personal loan with our easy-to-use free online EMI calculator.'
+    seoTitle: 'EMI Calculator - Free Monthly Loan Installment Calculator Online',
+    seoDescription: 'Calculate your monthly EMI for term loans and personal loans with our free online EMI calculator. View your loan repayment schedule and interest chart instantly.',
+    seoKeywords: [
+      'emi calculator', 'monthly emi calculator', 'loan emi calculator', 'loan calculator online', 'emi calculator monthly', 'free emi calculator',
+      'calculate your emi', 'loan installment calculator', 'bank emi calculator', 'term loan calculator', 'loan emi', 'emi loan',
+      'loan percentage calculator', 'interest calculator on loan', 'loan monthly payment calculator', 'emi schedule calculator',
+      'emi chart calculator', 'loan principal and interest calculator', 'loan calculator by emi amount', 'calculate loan rate',
+      'emi plan', 'bank emi', 'loans and emi', 'loan repayment calculator', 'personal loan emi calculator', 'personal loan interest rate calculator',
+      'monthly payment calculator for loan', 'loan repayment schedule', 'personal loan reducing balance calculator'
+    ],
+    canonicalSlug: 'emi-calculator',
+    openGraph: {
+      title: 'EMI Calculator - Free Monthly Loan Installment Calculator Online',
+      description: 'Calculate your monthly EMI for term loans and personal loans with our free online EMI calculator. View your loan repayment schedule and interest chart instantly.',
+      type: 'website'
+    },
+    schemas: [
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "EMI Calculator",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://financecalc-one.vercel.app/" },
+          { "@type": "ListItem", "position": 2, "name": "Loans", "item": "https://financecalc-one.vercel.app/#loans" },
+          { "@type": "ListItem", "position": 3, "name": "EMI Calculator", "item": "https://financecalc-one.vercel.app/emi-calculator" }
+        ]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is an EMI?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "An Equated Monthly Installment (EMI) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. You can easily calculate your EMI using our online tool."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is interest calculated on loans?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most consumer loans use an interest calculator on loan methodology based on a reducing balance. Interest is computed on the outstanding principal at the end of each month."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I calculate EMI for a personal loan?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Simply enter your loan amount (principal), interest rate, and tenure into our personal loan EMI calculator. The tool will instantly generate your loan schedule and interest breakdown."
+            }
+          }
+        ]
+      }
+    ]
   },
   {
     id: 'bike-loan',

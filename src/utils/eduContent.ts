@@ -57,7 +57,36 @@ export function getEduContent(calc: CalculatorDef, inputs: Record<string, any>):
   let mistakes: string[] = [];
   let tips: string[] = [];
 
-  if (calc.category === 'loan') {
+  if (calc.id === 'emi') {
+    intro = `Our free online ${calc.name} provides a robust, mathematical breakdown of your loan repayment schedule. By inputting your principal, rate, and term, this term loan calculator reveals how much of your monthly EMI goes toward the actual principal and how much covers the interest on a reducing balance basis.`;
+    whenToUse = [
+      `Before visiting a bank to lock down personal loan agreements, to calculate your EMI independently.`,
+      `When comparing multiple loan interest rates to see the true difference in your monthly payment.`,
+      `To calculate how much money you can save on interest by prepaying a fixed extra amount monthly.`,
+      `When you need a precise loan schedule calculator to forecast a personal loan reducing balance over time.`
+    ];
+    benefits = [
+      `Acts as a dedicated loan principal and interest calculator to protect you from hidden bank margins.`,
+      `Illustrates the powerful impact of prepayments on your loan repayment schedule.`,
+      `Calculates exact loan EMI monthly payment without requiring sensitive information.`,
+      `Features high-contrast PDF ledger summaries ready to print for financial planning.`
+    ];
+    limitations = [
+      `Does not account for variable interest rate adjustments unless locked into a fixed-rate structure.`,
+      `Fails to capture dynamic credit score changes which can alter qualification criteria.`,
+      `Does not automatically integrate processing fees or origination charges into the base calculation.`
+    ];
+    mistakes = [
+      `Focusing only on a low monthly payment calculator while ignoring a highly extended loan term which increases total interest.`,
+      `Failing to count processing fees, origination charges, and document fees into the loan's true APR.`,
+      `Assuming bank interest rates are non-negotiable; always use these figures to push for lower quotes.`
+    ];
+    tips = [
+      `Aim to make bi-weekly payments when possible; this adds one extra full payment per year, cutting years off mortgages.`,
+      `Always keep debt-to-income (DTI) ratios under 36% to remain highly liquid and avoid technical default risks.`,
+      `Use our loan calculator online before accepting any bank offer to verify the actual interest cost.`
+    ];
+  } else if (calc.category === 'loan') {
     intro = `The ${calc.name} offers borrowers a reliable, mathematical audit of interest liabilities, monthly payments, and amortization schedules. Whether preparing for a home mortgage, automobile lease, or personal credit line, running your values through our calculator ensures total transparency of loan dynamics.`;
     whenToUse = [
       `Before visiting a bank or dealership to lock down borrowing agreements.`,
